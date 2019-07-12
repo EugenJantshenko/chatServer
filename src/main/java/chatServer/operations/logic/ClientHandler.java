@@ -1,35 +1,36 @@
 package chatServer.operations.logic;
 
+import chatServer.operations.logic.server.Server;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ClientHandler implements Runnable {
+public class ClientHandler implements  Runnable{
 
 
     private Server server;
 
-    private PrintWriter outMessage;
-    private Scanner inMessage;
+    public PrintWriter outMessage;
+    public Scanner inMessage;
     private static final String HOST = "localhost";
     private static final int PORT = 3443;
-    private static int clients_count = 0;
+    public static int clients_count = 0;
 
-
+    @Autowired
     public ClientHandler(Socket socket, Server server) {
         try {
             clients_count++;
-//            this.server = server;
+            this.server = server;
             this.outMessage = new PrintWriter(socket.getOutputStream());
             this.inMessage = new Scanner(socket.getInputStream());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
+
     @Override
     public void run() {
         try {
@@ -50,14 +51,13 @@ public class ClientHandler implements Runnable {
                 }
                 Thread.sleep(100);
             }
-        }
-        catch (InterruptedException ex) {
+        } catch (InterruptedException ex) {
             ex.printStackTrace();
-        }
-        finally {
+        } finally {
             this.close();
         }
     }
+
     public void sendMsg(String msg) {
         try {
             outMessage.println(msg);
@@ -66,6 +66,7 @@ public class ClientHandler implements Runnable {
             ex.printStackTrace();
         }
     }
+
     public void close() {
         server.removeClient(this);
         clients_count--;

@@ -1,8 +1,9 @@
-package chatServer.operations.logic;
+package chatServer.operations.logic.server;
 
+import chatServer.operations.logic.ClientHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,23 +11,18 @@ import java.util.ArrayList;
 
 @Component
 public class Server {
+
     static final int PORT = 3443;
     private ArrayList<ClientHandler> clients = new ArrayList<ClientHandler>();
 
+    @Autowired
     public Server() {
-
-    }
-
-    @PostConstruct
-    public void runServer(){
         Socket clientSocket = null;
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(PORT);
             System.out.println("Сервер запущен!");
             while (true) {
-
-
                 clientSocket = serverSocket.accept();
                 ClientHandler client = new ClientHandler(clientSocket, this);
                 clients.add(client);
@@ -56,3 +52,4 @@ public class Server {
         clients.remove(client);
     }
 }
+
